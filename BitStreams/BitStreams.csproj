@@ -2,6 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <PackageId>ShadowDancer.BitStreams</PackageId>
+    <Version>0.0.1</Version>
+    <Description>Stream wrapper which allows reading one bit at once</Description>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/ShadowDancer/BitStreams</PackageProjectUrl>
+    <PackageTags>bit bits partial byte bytes stream streams sub-byte read write</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
 
 </Project>
