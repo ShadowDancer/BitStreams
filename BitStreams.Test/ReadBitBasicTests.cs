@@ -4,15 +4,15 @@ namespace BitStreams.Test
 {
     public class ReadBitBasicTests
     {
-        private const int FirstByte = 0b00101101;
-        private const int SecondByte = 0b11011101;
-        private const int ThirdByte = 0b10110101;
+        private const int _firstByte = 0b00101101;
+        private const int _secondByte = 0b11011101;
+        private const int _thirdByte = 0b10110101;
 
-        private BitStream _testObj;
+        private readonly BitStream _testObj;
 
         public ReadBitBasicTests()
         {
-            _testObj = BitStreamUtils.FromBytes(FirstByte, SecondByte, ThirdByte);
+            _testObj = BitStreamUtils.FromBytes(_firstByte, _secondByte, _thirdByte);
         }
 
         [Fact]
@@ -24,7 +24,7 @@ namespace BitStreams.Test
                 result |= (byte)(_testObj.ReadBit() << i);
             }
 
-            Assert.Equal(FirstByte, result);
+            Assert.Equal(_firstByte, result);
         }
 
         [Fact]
@@ -81,7 +81,7 @@ namespace BitStreams.Test
         }
 
         [Fact]
-        public void ReadBitOnEmptyBuffer_ResturnsEOS()
+        public void ReadBitOnEmptyBuffer_ReturnsEOS()
         {
             _testObj.ReadByte();
             _testObj.ReadByte();

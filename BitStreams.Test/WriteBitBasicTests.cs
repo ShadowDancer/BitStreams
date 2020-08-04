@@ -1,5 +1,3 @@
-using Microsoft.VisualBasic.CompilerServices;
-using System;
 using System.IO;
 using Xunit;
 
@@ -7,8 +5,8 @@ namespace BitStreams.Test
 {
     public class WriteBitBasicTests
     {
-        private MemoryStream _memoryStream;
-        private BitStream _testObj;
+        private readonly MemoryStream _memoryStream;
+        private readonly BitStream _testObj;
 
         public WriteBitBasicTests()
         {

@@ -1,23 +1,22 @@
 ﻿using System;
-using System.Dynamic;
 using System.IO;
 
 namespace BitStreams
 {
     /// <summary>
-    /// Stream wrapper, which exposes bit read operation.
-    /// Additional byte will be read/written to stream to make this possible.
+    ///     Stream wrapper, which exposes bit read operation.
+    ///     Additional byte will be read/written to stream to make this possible.
     /// </summary>
     public class BitStream : Stream
     {
         /// <summary>
-        /// Amount of bits in internal buffer.
-        /// When 0 next ReadBit will fetch byte from stream
+        ///     Amount of bits in internal buffer.
+        ///     When 0 next ReadBit will fetch byte from stream
         /// </summary>
         public int BitOffset { get; private set; }
 
         /// <summary>
-        /// Initalizez stream wrapping internal memory stream
+        ///     Initalizez stream wrapping internal memory stream
         /// </summary>
         public BitStream()
         {
@@ -26,7 +25,7 @@ namespace BitStreams
 
 
         /// <summary>
-        /// Initializes inner stream, which this instance of bitstream will operate on
+        ///     Initializes inner stream, which this instance of bitstream will operate on
         /// </summary>
         /// <param name="inner"></param>
         public BitStream(Stream inner)
@@ -35,35 +34,37 @@ namespace BitStreams
         }
 
         /// <summary>
-        /// Stream wrapped by this instance of BitStream
+        ///     Stream wrapped by this instance of BitStream
         /// </summary>
         public Stream Inner { get; }
 
         public void WriteBit(int i)
         {
-            if(i > 0)
+            if (i > 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(i), "Valid values are 0 and 1");
             }
+
             WriteBit(i != 0);
         }
 
         public void WriteBit(bool set)
         {
-            if(_writeBitOffset == 0)
+            if (WriteBitOffset == 0)
             {
-                _writeBitOffset = 8;
-                _writeAccumulator = 0;
+                WriteBitOffset = 8;
+                WriteAccumulator = 0;
             }
 
-            _writeBitOffset -= 1;
+            WriteBitOffset -= 1;
             if (set)
             {
-                _writeAccumulator |= (byte)(1 << _writeBitOffset);
+                WriteAccumulator |= (byte)(1 << WriteBitOffset);
             }
-            if(_writeAccumulator == 0)
+
+            if (WriteAccumulator == 0)
             {
-                Write(new byte[] { _writeAccumulator });
+                Write(new[] {WriteAccumulator});
             }
         }
 
@@ -76,15 +77,16 @@ namespace BitStreams
                 {
                     return -1;
                 }
-                _readAccumulator = (byte)result;
+
+                ReadAccumulator = (byte)result;
                 BitOffset = 8;
             }
 
             BitOffset -= 1;
-            return (_readAccumulator & (1 << BitOffset)) > 0 ? 1 : 0;
+            return (ReadAccumulator & (1 << BitOffset)) > 0 ? 1 : 0;
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public override void Write(byte[] buffer, int offset, int count)
         {
             Write(buffer.AsSpan(offset, count));
@@ -92,7 +94,7 @@ namespace BitStreams
 
         public override void Write(ReadOnlySpan<byte> buffer)
         {
-            if (_writeBitOffset == 0)
+            if (WriteBitOffset == 0)
             {
                 Inner.Write(buffer);
             }
@@ -100,25 +102,26 @@ namespace BitStreams
             {
                 byte[] writeBuffer = new byte[buffer.Length];
                 buffer.CopyTo(writeBuffer);
-                var mask = Mask[_writeBitOffset];
+                byte mask = Mask[WriteBitOffset];
                 byte reverseMask = (byte)(byte.MaxValue - mask);
-                int bitsLeft = (8 - _writeBitOffset);
-                byte newAccumulator = (byte)((writeBuffer[writeBuffer.Length - 1] & (reverseMask >> _writeBitOffset)) << _writeBitOffset);
-                for (int i = writeBuffer.Length-1; i > 0; i++)
+                int bitsLeft = 8 - WriteBitOffset;
+                byte newAccumulator = (byte)((writeBuffer[^1] & (reverseMask >> WriteBitOffset)) <<
+                                             WriteBitOffset);
+                for (int i = writeBuffer.Length - 1; i > 0; i++)
                 {
                     writeBuffer[i] >>= bitsLeft;
                     writeBuffer[i] |= (byte)((writeBuffer[i - 1] & mask) << bitsLeft);
                 }
 
                 writeBuffer[0] >>= bitsLeft;
-                writeBuffer[0] |= _writeAccumulator;
+                writeBuffer[0] |= WriteAccumulator;
 
-                _writeAccumulator = newAccumulator;
+                WriteAccumulator = newAccumulator;
                 Inner.Write(writeBuffer);
             }
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public override int Read(byte[] buffer, int offset, int count)
         {
             return Read(buffer.AsSpan(offset, count));
@@ -126,7 +129,7 @@ namespace BitStreams
 
         public override int Read(Span<byte> span)
         {
-            if(span.Length == 0)
+            if (span.Length == 0)
             {
                 return 0;
             }
@@ -135,104 +138,95 @@ namespace BitStreams
             {
                 return Inner.Read(span);
             }
-            else
+
+            int actual = Inner.Read(span);
+            if (actual == 0)
             {
-                int actual = Inner.Read(span);
-                if(actual == 0)
-                {
-                    return 0;
-                }
-
-                byte mask = Mask[BitOffset];
-                int bitsLeft = (8 - BitOffset);
-                byte newAccumulator = (byte)(span[actual - 1] & mask);
-                for (int i = actual -1; i >= 1; i++)
-                {
-                    span[i] = (byte)(span[i] >> BitOffset);
-                    span[i] |= (byte)((span[i] & mask) << bitsLeft);
-                }
-
-                span[0] = (byte)(span[0] >> BitOffset);
-                span[0] |= (byte)(_readAccumulator << bitsLeft);
-                _readAccumulator = newAccumulator;
-                return actual;
+                return 0;
             }
+
+            byte mask = Mask[BitOffset];
+            int bitsLeft = 8 - BitOffset;
+            byte newAccumulator = (byte)(span[actual - 1] & mask);
+            for (int i = actual - 1; i >= 1; i++)
+            {
+                span[i] = (byte)(span[i] >> BitOffset);
+                span[i] |= (byte)((span[i] & mask) << bitsLeft);
+            }
+
+            span[0] = (byte)(span[0] >> BitOffset);
+            span[0] |= (byte)(ReadAccumulator << bitsLeft);
+            ReadAccumulator = newAccumulator;
+            return actual;
         }
 
         /// <summary>
-        /// Stores extra byte fetched from stream while reading
+        ///     Stores extra byte fetched from stream while reading
         /// </summary>
-        private byte _readAccumulator { get; set; }
+        private byte ReadAccumulator { get; set; }
 
         /// <summary>
-        /// Stores bits waiting for full byte to write to stream
+        ///     Stores bits waiting for full byte to write to stream
         /// </summary>
-        private byte _writeAccumulator { get; set; }
+        private byte WriteAccumulator { get; set; }
 
         /// <summary>
-        /// Offset in _writeAccumulator, 0 means that whole byte may be dumped into stream
+        ///     Offset in _writeAccumulator, 0 means that whole byte may be dumped into stream
         /// </summary>
-        private int _writeBitOffset { get; set; }
+        private int WriteBitOffset { get; set; }
 
 
-        private static byte[] Mask = new byte[]
+        private static readonly byte[] Mask =
         {
-            0b0000000,
-            0b0000001,
-            0b0000011,
-            0b0000111,
-            0b0001111,
-            0b0011111,
-            0b0111111,
-            0b1111111
+            0b0000000, 0b0000001, 0b0000011, 0b0000111, 0b0001111, 0b0011111, 0b0111111, 0b1111111
         };
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public override long Seek(long offset, SeekOrigin origin)
         {
-            if(origin == SeekOrigin.Current && BitOffset != 0)
+            if (origin == SeekOrigin.Current && BitOffset != 0)
             {
                 throw new NotImplementedException();
             }
+
             return Inner.Seek(offset, origin);
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public override void SetLength(long value)
         {
             Inner.SetLength(value);
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public override void Flush()
         {
-            if(_writeBitOffset != 0)
+            if (WriteBitOffset != 0)
             {
-                _writeBitOffset = 0;
-                WriteByte((byte)_writeAccumulator);
+                WriteBitOffset = 0;
+                WriteByte(WriteAccumulator);
             }
 
             Inner.Flush();
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public override bool CanRead => Inner.CanRead;
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public override bool CanSeek => Inner.CanSeek;
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public override bool CanWrite => Inner.CanWrite;
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public override long Length => Inner.Length;
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public override long Position
         {
             get => Inner.Position;
             set => Inner.Position = value;
         }
-
     }
 }
