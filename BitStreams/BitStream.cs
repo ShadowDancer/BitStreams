@@ -110,7 +110,7 @@ namespace BitStreams
             {
                 byte[] writeBuffer = new byte[buffer.Length];
                 buffer.CopyTo(writeBuffer);
-                byte mask = Mask[WriteBitOffset];
+                byte mask = _mask[WriteBitOffset];
                 byte reverseMask = (byte)(byte.MaxValue - mask);
                 int bitsLeft = 8 - WriteBitOffset;
                 byte newAccumulator = (byte)((writeBuffer[^1] & (reverseMask >> WriteBitOffset)) <<
@@ -153,7 +153,7 @@ namespace BitStreams
                 return 0;
             }
 
-            byte mask = Mask[BitOffset];
+            byte mask = _mask[BitOffset];
             int bitsLeft = 8 - BitOffset;
             byte newAccumulator = (byte)(span[actual - 1] & mask);
             for (int i = actual - 1; i >= 1; i++)
@@ -184,9 +184,9 @@ namespace BitStreams
         private int WriteBitOffset { get; set; }
 
 
-        private static readonly byte[] Mask =
+        private static readonly byte[] _mask =
         {
-            0b0000000, 0b0000001, 0b0000011, 0b0000111, 0b0001111, 0b0011111, 0b0111111, 0b1111111
+            0b0000000, 0b00000001, 0b00000011, 0b00000111, 0b00001111, 0b00011111, 0b00111111, 0b01111111
         };
 
         /// <inheritdoc />
