@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace BitStreams.Test
+namespace BitStreams.Test.MsbFirst
 {
     public class ReadBitBasicTests
     {
@@ -12,7 +12,7 @@ namespace BitStreams.Test
 
         public ReadBitBasicTests()
         {
-            _testObj = BitStreamUtils.FromBytes(_firstByte, _secondByte, _thirdByte);
+            _testObj = BitStreamUtils.FromBytes(BitDirection.MsbFirst, _firstByte, _secondByte, _thirdByte);
         }
 
         [Fact]

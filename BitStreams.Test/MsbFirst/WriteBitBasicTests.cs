@@ -1,17 +1,17 @@
 using System.IO;
 using Xunit;
 
-namespace BitStreams.Test
+namespace BitStreams.Test.MsbFirst
 {
-    public class WriteBitBasicTests
+    public class WriteBitMsbFirstBasicTests
     {
         private readonly MemoryStream _memoryStream;
         private readonly BitStream _testObj;
 
-        public WriteBitBasicTests()
+        public WriteBitMsbFirstBasicTests()
         {
             _memoryStream = new MemoryStream();
-            _testObj = new BitStream(_memoryStream);
+            _testObj = new BitStream(BitDirection.MsbFirst, _memoryStream);
         }
 
         [Fact]

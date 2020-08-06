@@ -9,6 +9,8 @@ namespace BitStreams
     /// </summary>
     public class BitStream : Stream
     {
+        private readonly BitDirection _direction;
+
         /// <summary>
         ///     Amount of bits in internal buffer.
         ///     When 0 next ReadBit will fetch byte from stream
@@ -18,8 +20,10 @@ namespace BitStreams
         /// <summary>
         ///     Initalizez stream wrapping internal memory stream
         /// </summary>
-        public BitStream()
+        /// <param name="direction"></param>
+        public BitStream(BitDirection direction)
         {
+            _direction = direction;
             Inner = new MemoryStream();
         }
 
@@ -27,9 +31,11 @@ namespace BitStreams
         /// <summary>
         ///     Initializes inner stream, which this instance of bitstream will operate on
         /// </summary>
+        /// <param name="direction"></param>
         /// <param name="inner"></param>
-        public BitStream(Stream inner)
+        public BitStream(BitDirection direction, Stream inner)
         {
+            _direction = direction;
             Inner = inner;
         }
 

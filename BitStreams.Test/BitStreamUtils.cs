@@ -4,9 +4,9 @@ namespace BitStreams.Test
 {
     public static class BitStreamUtils
     {
-        public static BitStream FromBytes(params byte[] bytes)
+        public static BitStream FromBytes(BitDirection direction, params byte[] bytes)
         {
-            return new BitStream(new MemoryStream(bytes));
+            return new BitStream(direction,new MemoryStream(bytes));
         }
     }
 }
