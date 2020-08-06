@@ -110,11 +110,13 @@ namespace BitStreams
             {
                 byte[] writeBuffer = new byte[buffer.Length];
                 buffer.CopyTo(writeBuffer);
-                byte mask = _mask[WriteBitOffset];
+                var offset = _direction == BitDirection.MsbFirst ? WriteBitOffset : 7 - WriteBitOffset;
+                byte mask = _mask[offset];
                 byte reverseMask = (byte)(byte.MaxValue - mask);
-                int bitsLeft = 8 - WriteBitOffset;
-                byte newAccumulator = (byte)((writeBuffer[^1] & (reverseMask >> WriteBitOffset)) <<
-                                             WriteBitOffset);
+
+                int bitsLeft = 8 - offset;
+                byte newAccumulator = (byte)((writeBuffer[^1] & (reverseMask >> offset)) <<
+                                             offset);
                 for (int i = writeBuffer.Length - 1; i > 0; i++)
                 {
                     writeBuffer[i] >>= bitsLeft;
@@ -153,16 +155,17 @@ namespace BitStreams
                 return 0;
             }
 
-            byte mask = _mask[BitOffset];
-            int bitsLeft = 8 - BitOffset;
+            var offset = _direction == BitDirection.MsbFirst ? WriteBitOffset : 7 - WriteBitOffset;
+            byte mask = _mask[offset];
+            int bitsLeft = 8 - offset;
             byte newAccumulator = (byte)(span[actual - 1] & mask);
             for (int i = actual - 1; i >= 1; i++)
             {
-                span[i] = (byte)(span[i] >> BitOffset);
+                span[i] = (byte)(span[i] >> offset);
                 span[i] |= (byte)((span[i] & mask) << bitsLeft);
             }
 
-            span[0] = (byte)(span[0] >> BitOffset);
+            span[0] = (byte)(span[0] >> offset);
             span[0] |= (byte)(ReadAccumulator << bitsLeft);
             ReadAccumulator = newAccumulator;
             return actual;
