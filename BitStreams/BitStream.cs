@@ -62,7 +62,7 @@ namespace BitStreams
                 WriteAccumulator |= (byte)(1 << WriteBitOffset);
             }
 
-            if (WriteAccumulator == 0)
+            if (WriteBitOffset == 0)
             {
                 Write(new[] {WriteAccumulator});
             }
