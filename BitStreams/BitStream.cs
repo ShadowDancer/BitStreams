@@ -65,7 +65,8 @@ namespace BitStreams
             WriteBitOffset -= 1;
             if (set)
             {
-                WriteAccumulator |= (byte)(1 << WriteBitOffset);
+                int offset = _direction == BitDirection.MsbFirst ? WriteBitOffset : 7 - WriteBitOffset;
+                WriteAccumulator |= (byte)(1 << offset);
             }
 
             if (WriteBitOffset == 0)
@@ -89,7 +90,8 @@ namespace BitStreams
             }
 
             BitOffset -= 1;
-            return (ReadAccumulator & (1 << BitOffset)) > 0 ? 1 : 0;
+            var offset = _direction == BitDirection.MsbFirst ? BitOffset : 7 - BitOffset;
+            return (ReadAccumulator & (1 << offset)) > 0 ? 1 : 0;
         }
 
         /// <inheritdoc />
