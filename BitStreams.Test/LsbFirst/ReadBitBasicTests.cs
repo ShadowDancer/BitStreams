@@ -70,12 +70,13 @@ namespace BitStreams.Test.LsbFirst
         [Fact]
         public void Read3BitsThenByte_ReturnsCorrectByte()
         {
-            for (int i = 3; i >= 0; i--)
+            for (int i = 2; i >= 0; i--)
             {
-                _testObj.ReadBit();
+                int x = _testObj.ReadBit();
             }
 
             int result = _testObj.ReadByte();
+
 
             Assert.Equal(0b10100101, result);
         }

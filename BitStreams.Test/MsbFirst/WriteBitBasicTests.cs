@@ -74,8 +74,7 @@ namespace BitStreams.Test.MsbFirst
         public void WriteBitThenBytes()
         {
             _testObj.WriteBit(true);
-            _testObj.WriteByte(0b01110101);
-            _testObj.WriteByte(0b10011001);
+            _testObj.Write(new byte[] { 0b01110101, 0b10011001 });
 
             _testObj.Flush();
 
