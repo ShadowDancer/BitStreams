@@ -11,6 +11,11 @@
     <PackageReleaseNotes>-version 0.0.4 fixed issues when reading multple bytes with fractional bits</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/ShadowDancer/BitStreams</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <DebugSymbols>true</DebugSymbols>
+    <EmbedAllSources>true</EmbedAllSources>
+    <DebugType>portable</DebugType>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
