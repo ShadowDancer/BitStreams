@@ -178,10 +178,10 @@ namespace BitStreams
                 byte mask = _mask[offset];
                 int bitsLeft = 8 - offset;
                 newAccumulator = (byte)(span[actual - 1] & mask);
-                for (int i = actual - 1; i >= 1; i++)
+                for (int i = actual - 1; i >= 1; i--)
                 {
                     span[i] = (byte)(span[i] >> offset);
-                    span[i] |= (byte)((span[i] & mask) << bitsLeft);
+                    span[i] |= (byte)((span[i-1] & mask) << bitsLeft);
                 }
 
                 span[0] = (byte)(span[0] >> offset);
@@ -193,10 +193,10 @@ namespace BitStreams
                 byte mask = (byte)((byte.MaxValue - _mask[offset]));
                 int bitsLeft = 8 - offset;
                 newAccumulator = (byte)(span[actual - 1] & mask);
-                for (int i = actual - 1; i >= 1; i++)
+                for (int i = actual - 1; i >= 1; i--)
                 {
-                    span[i] = (byte)(span[i] >> offset);
-                    span[i] |= (byte)((span[i] & mask) << bitsLeft);
+                    span[i] = (byte)(span[i] << bitsLeft);
+                    span[i] |= (byte)((span[i-1] & mask) >> offset);
                 }
 
                 span[0] = (byte)(span[0] << bitsLeft);
