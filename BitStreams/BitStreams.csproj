@@ -3,12 +3,13 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>ShadowDancer.BitStreams</PackageId>
-    <Version>0.0.4</Version>
+    <Version>0.0.5</Version>
     <Description>Stream wrapper which allows reading one bit at time</Description>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/ShadowDancer/BitStreams</PackageProjectUrl>
     <PackageTags>bit bits partial byte bytes stream streams sub-byte read write</PackageTags>
-    <PackageReleaseNotes>-version 0.0.4 fixed issues when reading multple bytes with fractional bits</PackageReleaseNotes>
+    <PackageReleaseNotes>-version 0.0.4 fixed issues when reading multple bytes with fractional bits
+-version 0.0.5 symbols package added</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/ShadowDancer/BitStreams</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <DebugSymbols>true</DebugSymbols>
@@ -16,6 +17,8 @@
     <DebugType>portable</DebugType>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <AssemblyVersion>0.0.5.0</AssemblyVersion>
+    <FileVersion>0.0.5.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
